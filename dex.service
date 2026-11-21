@@ -1,0 +1,31 @@
+[Unit]
+Description=Dex OpenID Connect identity provider
+Documentation=https://dexidp.io/docs/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=dex
+Group=dex
+# /etc/dex/config.yaml is not shipped: start from
+# /usr/share/doc/dex-idp/config.yaml.dist.
+ExecStart=/usr/bin/dex serve /etc/dex/config.yaml
+Restart=on-failure
+# For the sqlite3 storage backend: file: /var/lib/dex/dex.db
+StateDirectory=dex
+StateDirectoryMode=0700
+WorkingDirectory=/var/lib/dex
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

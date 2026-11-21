@@ -1,0 +1,33 @@
+name: Update PKGBUILD
+
+# Checks upstream daily and opens a pull request when there is a new release.
+# The build check on that PR decides whether it lands: auto-merge takes it as
+# soon as the package builds. The PR is not a review gate — it is the record of
+# what changed, and the thing to revert when a release turns out to ship a
+# breaking change.
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to pin (default: latest upstream release)'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    uses: tehrengruber/arch-pre-built-packages/.github/workflows/pkg-repo-update.yml@v0.6
+    with:
+      version: ${{ inputs.version }}
+      release_url: https://github.com/dexidp/dex/releases/tag/v{version}
+      pr_note: >-
+        pkgver and the source checksum come from the upstream release tarball,
+        which update.sh downloads and hashes. Dex occasionally changes config
+        options and storage schemas between minor releases, so the changelog is
+        worth a look after the fact.
+    secrets:
+      UPDATE_PAT: ${{ secrets.UPDATE_PAT }}

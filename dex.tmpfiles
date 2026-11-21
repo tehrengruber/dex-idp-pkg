@@ -1,0 +1,3 @@
+# The config holds client secrets and connector credentials: readable by dex,
+# not by everyone.
+d /etc/dex 0750 root dex -

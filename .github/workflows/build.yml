@@ -1,0 +1,28 @@
+name: Build
+
+# Builds the package for real, in an Arch container, natively for each
+# architecture in the PKGBUILD's arch=(). This is what catches an upstream that
+# raises its Go requirement past what Arch ships, or moves cmd/dex — the
+# failure a checksum bump alone sails straight past, and which would otherwise
+# surface on the host at deploy time.
+#
+# Runs on pull requests so the result is a check on the change itself, which is
+# what the update workflow's auto-merge waits for.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Keep the job id "build": branch protection requires the "build / build" check.
+  build:
+    uses: tehrengruber/arch-pre-built-packages/.github/workflows/pkg-repo-build.yml@v0.6
+    with:
+      check_package: dex-idp
+      expected_files: >-
+        usr/bin/dex usr/lib/systemd/system/dex.service
+        usr/lib/sysusers.d/dex.conf usr/lib/tmpfiles.d/dex.conf
